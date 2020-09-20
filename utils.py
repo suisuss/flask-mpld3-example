@@ -24,7 +24,8 @@ def draw_fig1(x, y, fig_type=None, pie_labels=None, pie_fracs=None):
         return None
 
 def draw_fig2(x, y, fig_types=None, pie_labels=None, pie_fracs=None):
-    if fig_types := list(filter(None, fig_types)):
+    fig_types = list(filter(None, fig_types))
+    if fig_types:
         fig = plt.figure()
         for i, fig_type in enumerate(fig_types): 
             axi = fig.add_subplot(2, 2, i + 1)
@@ -47,7 +48,8 @@ def draw_fig2(x, y, fig_types=None, pie_labels=None, pie_fracs=None):
 
 
 def draw_fig3(x, y, fig_size=None, fig_types=None, pie_labels=None, pie_fracs=None):
-    if fig_types := list(filter(None, fig_types)):
+    fig_types = list(filter(None, fig_types))
+    if fig_types:
         fig = plt.figure()
         for i, fig_type in enumerate(fig_types): 
             axi = fig.add_subplot(2, 2, i + 1)
