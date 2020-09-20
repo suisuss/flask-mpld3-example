@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h3>With figure size as (1, 1)</h3>
+  <hr>
+  <p>X: {{x}}</p>
+  <p>Y: {{y}}</p>
+  <form class="form" method="POST" action="{{ url_for('example_one') }}">
+    <div class="form-group">
+        <label for="fig_type1">Select a fig_type: </label>
+        <select name="fig_type1" class="form-control">
+                <option hidden disabled selected value> None </option>
+            {% for option in fig_type_options %}
+                <option>{{ option.fig_type }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <center><button type="submit" class="btn btn-default">Plot</button></center>
+    </div>
+  </form>
+  <hr>
+  <div class="container">
+        <p>Previous fig_type selected: {{fig_type_selection}}</p>
+        {{plot|safe}}
+  </div>
+  <hr>
+    <p><b>The code:</b></p>
+    <code>
+        <pre>
+        matplotlib.use('Agg')
+        plt.ioff()
+        matplotlib_config = {
+            "lines.linewidth": 2.0,
+            "axes.edgecolor": "#bcbcbc",
+            "patch.linewidth": 0.5,
+            "legend.fancybox": True,
+            "axes.facecolor": "#eeeeee",
+            "axes.labelsize": "large",
+            "axes.grid": True,
+            "grid.color":"white",
+            "grid.linestyle":"solid",
+            "patch.edgecolor": "#eeeeee",
+            "axes.titlesize": "x-large"
+        }
+        matplotlib.rcParams.update(matplotlib_config)
+
+        def draw_fig1(x, y, fig_type=None, pie_labels=None, pie_fracs=None):
+            if fig_type:
+                fig, ax = plt.subplots()
+                if fig_type == "line":
+                    ax.plot(x, y)
+                elif fig_type == "bar":
+                    ax.bar(x, y)
+                elif fig_type == "pie":
+                    ax.pie(pie_fracs, labels=pie_labels)
+                elif fig_type == "scatter":
+                    ax.scatter(x, y)
+                elif fig_type == "hist":
+                    ax.hist(y, 10, density=1)
+                elif fig_type == "area":
+                    ax.plot(x, y)
+                    ax.fill_between(x, 0, y, alpha=0.2)
+                return mpld3.fig_to_html(fig)
+            else:
+                return None
+
+
+        @app.route('/one', methods=['GET', 'POST'])
+        def one():
+            fig_type_selection = request.form.get('fig_type1')
+            x = list(range(100))
+            y = [a * 2 + random.randint(-20, 20) for a in x]
+
+            pie_fracs = [20, 30, 40, 10]
+            pie_labels = ["A", "B", "C", "D"]
+
+            plot = draw_fig1(x, y, fig_type=fig_type_selection, pie_labels=pie_labels, pie_fracs=pie_fracs)
+            return render_template('one.html', x=x, y=y, fig_type_options=fig_type_options, fig_type_selection=fig_type_selection, plot=plot)
+        </pre>
+    </code>
+{% endblock %}

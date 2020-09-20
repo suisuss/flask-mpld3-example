@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h3>With figure size as (2, 2)</h3>
+  <hr>
+  <p>X: {{x}}</p>
+  <p>Y: {{y}}</p>
+  <form class="form" method="POST" action="{{ url_for('example_two') }}">
+    <div class="form-group">
+        <label for="fig_type1">Select a fig_type 1: </label>
+        <select name="fig_type1" class="form-control">
+                <option hidden disabled selected value> None </option>
+            {% for option in fig_type_options %}
+                <option>{{ option.fig_type }}</option>
+            {% endfor %}
+        </select>
+        <label for="fig_type2">Select a fig_type 2: </label>
+        <select name="fig_type2" class="form-control">
+                <option hidden disabled selected value> None </option>
+            {% for option in fig_type_options %}
+                <option>{{ option.fig_type }}</option>
+            {% endfor %}
+        </select>
+        <label for="fig_type3">Select a fig_type 3: </label>
+        <select name="fig_type3" class="form-control">
+                <option hidden disabled selected value> None </option>
+            {% for option in fig_type_options %}
+                <option>{{ option.fig_type }}</option>
+            {% endfor %}
+        </select>
+        <label for="fig_type4">Select a fig_type 4: </label>
+        <select name="fig_type4" class="form-control">
+                <option hidden disabled selected value> None </option>
+            {% for option in fig_type_options %}
+                <option>{{ option.fig_type }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <center><button type="submit" class="btn btn-default">Plot</button></center>
+    </div>
+  </form>
+  <hr>
+  <div class="container">
+        <p>Previous fig_types selected: {{fig_types_selection}}</p>
+        {{plot|safe}}
+  </div>
+  <hr>
+  <p><b>The code:</b></p>
+  <code>
+    <pre>
+    matplotlib.use('Agg')
+    plt.ioff()
+    matplotlib_config = {
+        "lines.linewidth": 2.0,
+        "axes.edgecolor": "#bcbcbc",
+        "patch.linewidth": 0.5,
+        "legend.fancybox": True,
+        "axes.facecolor": "#eeeeee",
+        "axes.labelsize": "large",
+        "axes.grid": True,
+        "grid.color":"white",
+        "grid.linestyle":"solid",
+        "patch.edgecolor": "#eeeeee",
+        "axes.titlesize": "x-large"
+    }
+    matplotlib.rcParams.update(matplotlib_config)
+
+    def draw_fig2(x, y, fig_types=None, pie_labels=None, pie_fracs=None):
+        if fig_types := list(filter(None, fig_types)):
+            fig = plt.figure()
+            for i, fig_type in enumerate(fig_types): 
+                axi = fig.add_subplot(2, 2, i + 1)
+                if fig_type == "line":
+                    axi.plot(x, y)
+                elif fig_type == "bar":
+                    axi.bar(x, y)
+                elif fig_type == "pie":
+                    axi.pie(pie_fracs, labels=pie_labels)
+                elif fig_type == "scatter":
+                    axi.scatter(x, y)
+                elif fig_type == "hist":
+                    axi.hist(y, 10, density=1)
+                elif fig_type == "area":
+                    axi.plot(x, y)
+                    axi.fill_between(x, 0, y, alpha=0.2)
+            return mpld3.fig_to_html(fig)
+        else:
+            return None
+
+        
+    @app.route('/two', methods=['GET', 'POST'])
+    def two():
+        fig_types_selection = [request.form.get('fig_type1'), request.form.get('fig_type2'), request.form.get('fig_type3'), request.form.get('fig_type4')]
+        x = list(range(100))
+        y = [a * 2 + random.randint(-20, 20) for a in x]
+
+        pie_fracs = [20, 30, 40, 10]
+        pie_labels = ["A", "B", "C", "D"]
+
+        plot = draw_fig2(x, y, fig_types=fig_types_selection)
+        return render_template('two.html', fig_type_options=fig_type_options, fig_types_selection=fig_types_selection, x=x, y=y, plot=plot)
+    </pre>
+  </code>
+{% endblock %}

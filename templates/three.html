@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+  <h3>Under Construction</h3>
+  <hr>
+  <p>X: {{x}}</p>
+  <p>Y: {{y}}</p>
+  <form class="form" method="POST" action="{{ url_for('example_three') }}">
+    <div class="form-group">
+        <label for="fig_size">Select a fig_size: </label>
+        <select name="fig_size" class="form-control">
+                <option hidden disabled selected value> None </option>
+            {% for option in fig_size_options %}
+                <option>{{ option.fig_size }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <button type="submit" class="btn btn-default">Go</button>
+    </div>
+  </form>
+{% endblock %}
